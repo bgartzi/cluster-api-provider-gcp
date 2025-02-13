@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 
@@ -454,6 +455,15 @@ func (m *MachineScope) InstanceSpec(log logr.Logger) *compute.Instance {
 			instance.ConfidentialInstanceConfig.ConfidentialInstanceType = "SEV"
 		case infrav1.ConfidentialComputePolicySEVSNP:
 			instance.ConfidentialInstanceConfig.ConfidentialInstanceType = "SEV_SNP"
+		case infrav1.ConfidentialComputePolicyEnabled:
+			machineSeries := strings.Split(m.GCPMachine.Spec.InstanceType, "-")[0]
+			switch {
+			case slices.Contains(infrav1.ConfidentialMachineSeriesSupportingSevsnp, machineSeries):
+				instance.ConfidentialInstanceConfig.ConfidentialInstanceType = "SEV_SNP"
+			case slices.Contains(infrav1.ConfidentialMachineSeriesSupportingSev, machineSeries):
+				instance.ConfidentialInstanceConfig.ConfidentialInstanceType = "SEV"
+			default:
+			}
 		default:
 		}
 	}

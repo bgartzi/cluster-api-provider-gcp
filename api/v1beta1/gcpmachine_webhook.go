@@ -116,13 +116,17 @@ func validateConfidentialCompute(spec GCPMachineSpec) error {
 
 		machineSeries := strings.Split(spec.InstanceType, "-")[0]
 		switch *spec.ConfidentialCompute {
-		case ConfidentialComputePolicyEnabled, ConfidentialComputePolicySEV:
-			if !slices.Contains(confidentialMachineSeriesSupportingSev, machineSeries) {
-				return fmt.Errorf("ConfidentialCompute %s requires any of the following machine series: %s. %s was found instead", *spec.ConfidentialCompute, strings.Join(confidentialMachineSeriesSupportingSev, ", "), spec.InstanceType)
+		case ConfidentialComputePolicyEnabled:
+			if !(slices.Contains(ConfidentialMachineSeriesSupportingSev, machineSeries) || slices.Contains(ConfidentialMachineSeriesSupportingSevsnp, machineSeries)) {
+				return fmt.Errorf("ConfidentialCompute %s requires any of the following machine series: %s for AMD SEV-SNP machines or %s for AMD SEV machines. %s was found instead", *spec.ConfidentialCompute, strings.Join(ConfidentialMachineSeriesSupportingSevsnp, ", "), strings.Join(ConfidentialMachineSeriesSupportingSev, ", "), spec.InstanceType)
+			}
+		case ConfidentialComputePolicySEV:
+			if !slices.Contains(ConfidentialMachineSeriesSupportingSev, machineSeries) {
+				return fmt.Errorf("ConfidentialCompute %s requires any of the following machine series: %s. %s was found instead", *spec.ConfidentialCompute, strings.Join(ConfidentialMachineSeriesSupportingSev, ", "), spec.InstanceType)
 			}
 		case ConfidentialComputePolicySEVSNP:
-			if !slices.Contains(confidentialMachineSeriesSupportingSevsnp, machineSeries) {
-				return fmt.Errorf("ConfidentialCompute %s requires any of the following machine series: %s. %s was found instead", *spec.ConfidentialCompute, strings.Join(confidentialMachineSeriesSupportingSevsnp, ", "), spec.InstanceType)
+			if !slices.Contains(ConfidentialMachineSeriesSupportingSevsnp, machineSeries) {
+				return fmt.Errorf("ConfidentialCompute %s requires any of the following machine series: %s. %s was found instead", *spec.ConfidentialCompute, strings.Join(ConfidentialMachineSeriesSupportingSevsnp, ", "), spec.InstanceType)
 			}
 		default:
 			return fmt.Errorf("invalid ConfidentialCompute %s", *spec.ConfidentialCompute)

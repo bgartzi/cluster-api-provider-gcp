@@ -143,8 +143,8 @@ const (
 // Confidential VM Technology support depends on the configured machine types.
 // reference: https://cloud.google.com/compute/confidential-vm/docs/os-and-machine-type#machine-type
 var (
-	confidentialMachineSeriesSupportingSev    = []string{"n2d", "c2d", "c3d"}
-	confidentialMachineSeriesSupportingSevsnp = []string{"n2d"}
+	ConfidentialMachineSeriesSupportingSev    = []string{"n2d", "c2d", "c3d"}
+	ConfidentialMachineSeriesSupportingSevsnp = []string{"n2d"}
 )
 
 // HostMaintenancePolicy represents the desired behavior ase of a host maintenance event.
